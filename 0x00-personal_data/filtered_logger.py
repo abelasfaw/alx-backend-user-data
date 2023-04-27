@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 '''obfuscated log message'''
 import re
-from typing import List
+import os
 import logging
+import mysql.connector
+from typing import List
+from mysql.connector import MySQLConnection
 
 
 class RedactingFormatter(logging.Formatter):
@@ -14,6 +17,7 @@ class RedactingFormatter(logging.Formatter):
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
+        '''constructor to create new instance'''
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
 
@@ -46,3 +50,13 @@ def filter_datum(fields: List[str], redaction: str, message: str,
                          '{}={}{}'.format(field, redaction, separator),
                          message)
     return message
+
+
+def get_db() -> MySQLConnection:
+    '''returns connector to Database'''
+    return mysql.connector.connect(
+        user=os.getenv("PERSONAL_DATA_DB_USERNAME", 'root'),
+        password=os.getenv("PERSONAL_DATA_DB_PASSWORD", ''),
+        host=os.getenv("PERSONAL_DATA_DB_HOST", 'localhost'),
+        database=os.getenv("PERSONAL_DATA_DB_NAME")
+    )
