@@ -2,8 +2,6 @@
 '''obfuscated log message'''
 import re
 from typing import List
-
-
 import logging
 
 
@@ -23,6 +21,24 @@ class RedactingFormatter(logging.Formatter):
         '''returns obfuscated log records'''
         return filter_datum(self.fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
+
+
+PII_FIELDS = ("name", "email", "password", "ssn", "phone")
+
+
+def get_logger() -> logging.Logger:
+    '''returns a logging.Logger object'''
+    logger = logging.getLogger("user_data")
+    logging.progagate = False
+    logger.setLevel(logging.INFO)
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    redacting_formatter = RedactingFormatter(list(PII_FIELDS))
+    strean_handler.setFormatter(redacting_formatter)
+
+    logger.addHandler(stream_handler)
+    return logger
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
