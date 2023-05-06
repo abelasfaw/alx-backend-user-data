@@ -15,11 +15,21 @@ class Auth:
             return True
         if (path in excluded_paths):
             return False
+
         elif (not path.endswith('/')):
-            option2 = path + '/'
-            return (not(option2 in excluded_paths))
+            if (self.match_wildcard(path, excluded_paths)):
+                return False
+            return (not((path + '/') in excluded_paths))
         else:
             return True
+
+    def match_wildcard(self, path: str, excluded_paths: List[str]) -> bool:
+        '''checks for excluded paths ending with *'''
+        for single_path in excluded_paths:
+            if (single_path.endswith('*')):
+                if (path.startswith(single_path[:-1])):
+                    return True
+        return False
 
     def authorization_header(self, request=None) -> str:
         '''handles authorization header'''
