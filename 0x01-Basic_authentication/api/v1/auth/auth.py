@@ -15,10 +15,10 @@ class Auth:
             return True
         if (path in excluded_paths):
             return False
+        elif (self.match_wildcard(path, excluded_paths)):
+            return False
 
         elif (not path.endswith('/')):
-            if (self.match_wildcard(path, excluded_paths)):
-                return False
             return (not((path + '/') in excluded_paths))
         else:
             return True
